@@ -5,14 +5,14 @@ Educational platform with video lectures, notes, certificates & offer letters.
 
 import os
 from pathlib import Path
-from decouple import config
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+# ─── Core ──────────────────────────────────────────────────────────────────────
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-bihar-skill-hub-default-key-2025')
+DEBUG      = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # Third party
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'drf_yasg',
 
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,27 +70,30 @@ TEMPLATES = [
     },
 ]
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR.parent / 'database' / 'db.sqlite3',
+# ─── Database ──────────────────────────────────────────────────────────────────
+# Uses PostgreSQL on Railway (DATABASE_URL auto set), SQLite locally
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
+if DATABASE_URL:
+    # Production — Railway PostgreSQL
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    # Local development — SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR.parent / 'database' / 'db.sqlite3',
+        }
+    }
 
-# For production, use PostgreSQL:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST', default='localhost'),
-#         'PORT': config('DB_PORT', default='5432'),
-#     }
-# }
-
-# Password validation
+# ─── Password validation ───────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -96,17 +101,20 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
+# ─── Internationalization ──────────────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
+TIME_ZONE     = 'Asia/Kolkata'
+USE_I18N      = True
+USE_TZ        = True
 
-# Static & Media
-STATIC_URL = '/static/'
+# ─── Static & Media ───────────────────────────────────────────────────────────
+STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL   = '/media/'
+MEDIA_ROOT  = BASE_DIR / 'media'
+
+# Whitenoise — serve static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -118,38 +126,39 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 # ─── JWT ───────────────────────────────────────────────────────────────────────
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ACCESS_TOKEN_LIFETIME':  timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ROTATE_REFRESH_TOKENS':  True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 # ─── CORS ──────────────────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = config(
+CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:3000'
+    'http://localhost:5173,http://127.0.0.1:5173'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
-# Email settings - all optional with defaults
-EMAIL_BACKEND     = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST        = os.environ.get('EMAIL_HOST', 'smtpout.secureserver.net')
-EMAIL_PORT        = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS     = True
-EMAIL_HOST_USER   = os.environ.get('EMAIL_HOST_USER', '')
+# ─── Email ─────────────────────────────────────────────────────────────────────
+EMAIL_BACKEND       = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST          = os.environ.get('EMAIL_HOST', 'smtpout.secureserver.net')
+EMAIL_PORT          = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'admin@biharskillhub.co.in')
-
+DEFAULT_FROM_EMAIL  = os.environ.get('DEFAULT_FROM_EMAIL', 'admin@biharskillhub.co.in')
 
 # ─── Certificate Settings ──────────────────────────────────────────────────────
 CERTIFICATE_TEMPLATE_DIR = BASE_DIR / 'templates' / 'certificates'
 OFFER_LETTER_TEMPLATE_DIR = BASE_DIR / 'templates' / 'offer_letters'
-GENERATED_DOCS_DIR = MEDIA_ROOT / 'generated'
+GENERATED_DOCS_DIR        = MEDIA_ROOT / 'generated'
 
 # ─── Swagger ───────────────────────────────────────────────────────────────────
 SWAGGER_SETTINGS = {
@@ -157,7 +166,7 @@ SWAGGER_SETTINGS = {
         'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
-            'in': 'header',
+            'in':   'header',
         }
     }
 }
