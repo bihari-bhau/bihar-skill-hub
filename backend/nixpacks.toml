@@ -1,0 +1,21 @@
+[variables]
+NIXPACKS_NO_BUILD_SECRETS = "1"
+```
+
+---
+
+## Also in Railway — Delete and Re-add SECRET_KEY
+```
+1. Railway → Variables tab
+2. Delete SECRET_KEY variable
+3. Add it again fresh:
+   NAME  → SECRET_KEY
+   VALUE → BiharSkillHub@Secret#Key2025!XYZ
+```
+
+---
+
+## Also change start command back to simple version first
+```
+Settings → Deploy → Start Command:
+gunicorn wsgi:application --bind 0.0.0.0:$PORT
