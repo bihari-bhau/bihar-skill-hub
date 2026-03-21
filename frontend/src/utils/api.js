@@ -2,8 +2,10 @@
 // Central API utility — all requests go through here.
 // Automatically attaches JWT token and handles 401 (token expired).
 
-const BASE_URL = "http://localhost:8000/api";
-
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : "http://localhost:8000/api";
+  
 export function getToken() {
   return localStorage.getItem("access_token");
 }
