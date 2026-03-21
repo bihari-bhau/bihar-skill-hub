@@ -1,0 +1,28 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "gunicorn wsgi:application --bind 0.0.0.0:$PORT"
+healthcheckPath = "/api/docs/"
+restartPolicyType = "on_failure"
+```
+
+---
+
+## Also make sure these files exist in `backend/` folder
+
+### `backend/Procfile`
+```
+web: gunicorn wsgi:application --bind 0.0.0.0:$PORT
+```
+
+### `backend/runtime.txt`
+```
+python-3.11.0
+```
+
+### `backend/requirements.txt` — add these 3 lines at bottom
+```
+gunicorn>=21.2.0
+psycopg2-binary>=2.9.9
+whitenoise>=6.6.0
