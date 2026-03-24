@@ -8,7 +8,6 @@ const Navbar = () => {
 
   useEffect(() => {
     setUser(getUser());
-    // Sync across tabs
     const sync = () => setUser(getUser());
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
@@ -35,8 +34,11 @@ const Navbar = () => {
 
           {user ? (
             <>
-              <Link to="/dashboard" className="dashboard-link">
-                👤 {user.full_name?.split(" ")[0]}
+              <Link to="/profile" className="profile-nav-link">
+                <span className="nav-avatar">
+                  {user.full_name?.charAt(0).toUpperCase()}
+                </span>
+                {user.full_name?.split(" ")[0]}
               </Link>
               <button className="logout-btn" onClick={handleLogout}>Logout</button>
             </>
