@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api, setAuth } from "../utils/api";
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
         return;
       }
       setAuth(data);
-      navigate("/dashboard");
+      navigate("/profile");
     } catch {
       setError("Network error. Is the backend running?");
     } finally {
@@ -36,30 +36,57 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>Welcome Back</h2>
-        <p className="form-subtitle">Login to continue learning</p>
+    <div className="auth-page">
 
-        {error && <div className="form-error">{error}</div>}
+      {/* Left Side */}
+      <div className="auth-left">
+        <lottie-player
+          src="https://assets10.lottiefiles.com/packages/lf20_tno6cg2w.json"
+          background="transparent"
+          speed="1"
+          style={{ width: "260px", height: "260px" }}
+          loop autoplay
+        />
+        <h1>Bihar Skill Hub</h1>
+        <p>Upskill yourself with industry-ready courses and build your future.</p>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email" name="email" placeholder="Email Address"
-            value={formData.email} onChange={handleChange}
-          />
-          <input
-            type="password" name="password" placeholder="Password"
-            value={formData.password} onChange={handleChange}
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? "Logging in…" : "Login"}
-          </button>
-        </form>
+      {/* Right Side */}
+      <div className="auth-right">
+        <div className="auth-card">
+          <h2>Welcome Back 👋</h2>
+          <p className="auth-subtitle">Login to continue learning</p>
 
-        <p className="form-footer">
-          Don&apos;t have an account? <Link to="/register">Register</Link>
-        </p>
+          {error && <div className="auth-error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="auth-field">
+              <label>Email Address</label>
+              <input
+                type="email" name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="auth-field">
+              <label>Password</label>
+              <input
+                type="password" name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+            <button type="submit" className="auth-btn" disabled={loading}>
+              {loading ? "Logging in…" : "Login"}
+            </button>
+          </form>
+
+          <p className="auth-toggle">
+            New user? <Link to="/register">Create Account</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
