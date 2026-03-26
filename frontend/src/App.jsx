@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { getUser } from "./utils/api";
 
 import Navbar       from "./Components/Navbar";
@@ -19,10 +19,16 @@ import Success      from "./pages/Success";
 const PrivateRoute = ({ children }) =>
   getUser() ? children : <Navigate to="/login" replace />;
 
-function App() {
+// Hide navbar and footer on auth pages
+const AUTH_ROUTES = ["/login", "/register"];
+
+function Layout() {
+  const location = useLocation();
+  const isAuth   = AUTH_ROUTES.includes(location.pathname);
+
   return (
-    <Router>
-      <Navbar />
+    <>
+      {!isAuth && <Navbar />}
       <Routes>
         <Route path="/"           element={<Home />} />
         <Route path="/courses"    element={<Courses />} />
@@ -31,13 +37,19 @@ function App() {
         <Route path="/register"   element={<Register />} />
         <Route path="/payment"    element={<Payment />} />
         <Route path="/success"    element={<Success />} />
-
-        {/* Protected */}
-        <Route path="/dashboard"      element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/profile"        element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/dashboard"  element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/profile"    element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/quiz/:courseId" element={<PrivateRoute><Quiz /></PrivateRoute>} />
       </Routes>
-      <Footer />
+      {!isAuth && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Layout />
     </Router>
   );
 }
