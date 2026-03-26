@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, setAuth } from "../utils/api";
 
 const Register = () => {
   const navigate  = useNavigate();
-  const [step, setStep]       = useState(1);
+  const [step, setStep]             = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    full_name: "", email: "", password: "", password2: "",
-  });
-  const [error, setError]     = useState("");
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData]     = useState({ full_name: "", email: "", password: "", password2: "" });
+  const [error, setError]           = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [lottieReady, setLottieReady] = useState(false);
+
+  useEffect(() => {
+    if (!customElements.get("lottie-player")) {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+      script.onload = () => setLottieReady(true);
+      document.head.appendChild(script);
+    } else {
+      setLottieReady(true);
+    }
+  }, []);
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -72,13 +82,20 @@ const Register = () => {
 
       {/* Left Side */}
       <div className="auth-left">
-        <lottie-player
-          src="https://assets10.lottiefiles.com/packages/lf20_tno6cg2w.json"
-          background="transparent"
-          speed="1"
-          style={{ width: "260px", height: "260px" }}
-          loop autoplay
-        />
+        <div className="lottie-wrap">
+          {lottieReady ? (
+            <lottie-player
+              src="https://assets3.lottiefiles.com/packages/lf20_DMgKk1.json"
+              background="transparent"
+              speed="1"
+              style={{ width: "280px", height: "280px" }}
+              loop
+              autoplay
+            />
+          ) : (
+            <div className="lottie-fallback">🎓</div>
+          )}
+        </div>
         <h1>Bihar Skill Hub</h1>
         <p>Join thousands of learners and build your future today.</p>
       </div>
@@ -87,14 +104,14 @@ const Register = () => {
       <div className="auth-right">
         <div className="auth-card">
           <h2>Create Account 🚀</h2>
-          <p className="auth-subtitle">Step {step} of 2</p>
 
-          {/* Step indicator */}
+          {/* Step Indicator */}
           <div className="step-indicator">
             <div className={`step-dot ${step >= 1 ? "done" : ""}`}>1</div>
             <div className={`step-line ${step === 2 ? "done" : ""}`} />
             <div className={`step-dot ${step === 2 ? "done" : ""}`}>2</div>
           </div>
+          <p className="auth-subtitle">Step {step} of 2 — {step === 1 ? "Basic Info" : "Set Password"}</p>
 
           {error && <div className="auth-error">{error}</div>}
 
@@ -119,9 +136,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              <button type="submit" className="auth-btn">
-                Next →
-              </button>
+              <button type="submit" className="auth-btn">Next →</button>
             </form>
           )}
 
@@ -147,11 +162,8 @@ const Register = () => {
                 />
               </div>
               <div className="auth-two-btns">
-                <button
-                  type="button"
-                  className="auth-btn-outline"
-                  onClick={() => { setStep(1); setError(""); }}
-                >
+                <button type="button" className="auth-btn-outline"
+                  onClick={() => { setStep(1); setError(""); }}>
                   ← Back
                 </button>
                 <button type="submit" className="auth-btn" disabled={loading}>
@@ -171,13 +183,15 @@ const Register = () => {
       {showSuccess && (
         <div className="success-modal-overlay">
           <div className="success-modal">
-            <lottie-player
-              src="https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json"
-              background="transparent"
-              speed="1"
-              style={{ width: "180px", height: "180px" }}
-              autoplay
-            />
+            {lottieReady && (
+              <lottie-player
+                src="https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json"
+                background="transparent"
+                speed="1"
+                style={{ width: "180px", height: "180px" }}
+                autoplay
+              />
+            )}
             <h3>Registration Successful! 🎉</h3>
             <p>Welcome to Bihar Skill Hub!</p>
           </div>

@@ -47,13 +47,22 @@ const Courses = () => {
     const load = async () => {
       try {
         const [cRes, catRes] = await Promise.all([
-          api.get("/courses/"),
-          api.get("/courses/categories/"),
+        api.get("/courses/"),
+        api.get("/courses/categories/"),
         ]);
         const cData   = await cRes.json();
         const catData = await catRes.json();
-        setCourses(cData.results ?? cData);
-        setCategories(catData.results ?? catData);
+
+        // Always ensure arrays
+        const courseList   = Array.isArray(cData)         ? cData         
+                   : Array.isArray(cData.results)  ? cData.results 
+                   : [];
+        const categoryList = Array.isArray(catData)        ? catData        
+                   : Array.isArray(catData.results) ? catData.results 
+                   : [];
+
+        setCourses(courseList);
+        setCategories(categoryList);
       } catch {
         setError("Could not load courses. Make sure the backend is running.");
       } finally {
@@ -64,7 +73,7 @@ const Courses = () => {
   }, []);
 
   // Filter
-  let filtered = courses.filter((c) => {
+  let filtered = (Array.isArray(courses) ? courses : []).filter((c) => {
     const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) ||
                         (c.category_name || "").toLowerCase().includes(search.toLowerCase()) ||
                         (c.description || "").toLowerCase().includes(search.toLowerCase());
