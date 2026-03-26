@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, setAuth } from "../utils/api";
 
@@ -7,6 +7,19 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
+  const [lottieReady, setLottieReady] = useState(false);
+
+  useEffect(() => {
+    // Load lottie-player script dynamically
+    if (!customElements.get("lottie-player")) {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+      script.onload = () => setLottieReady(true);
+      document.head.appendChild(script);
+    } else {
+      setLottieReady(true);
+    }
+  }, []);
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -40,13 +53,20 @@ const Login = () => {
 
       {/* Left Side */}
       <div className="auth-left">
-        <lottie-player
-          src="https://assets10.lottiefiles.com/packages/lf20_tno6cg2w.json"
-          background="transparent"
-          speed="1"
-          style={{ width: "260px", height: "260px" }}
-          loop autoplay
-        />
+        <div className="lottie-wrap">
+          {lottieReady ? (
+            <lottie-player
+              src="https://assets3.lottiefiles.com/packages/lf20_DMgKk1.json"
+              background="transparent"
+              speed="1"
+              style={{ width: "280px", height: "280px" }}
+              loop
+              autoplay
+            />
+          ) : (
+            <div className="lottie-fallback">🎓</div>
+          )}
+        </div>
         <h1>Bihar Skill Hub</h1>
         <p>Upskill yourself with industry-ready courses and build your future.</p>
       </div>

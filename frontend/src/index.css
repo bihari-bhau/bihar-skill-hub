@@ -2574,3 +2574,17 @@ img{
   .auth-right { width: 100%; padding: 24px 16px; }
   .auth-card  { padding: 28px 20px; }
 }
+
+/* Lottie wrapper */
+.lottie-wrap {
+  width: 280px; height: 280px;
+  display: flex; align-items: center; justify-content: center;
+}
+.lottie-fallback {
+  font-size: 7rem;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-16px); }
+}
