@@ -23,8 +23,8 @@ const Footer = () => {
 
         <div className="footer-col">
           <h4>Contact</h4>
-          <p>Email: support@biharskillhub.com</p>
-          <p>Phone: +91 9876543210</p>
+          <p>Email: admin@biharskillhub.com</p>
+          <p>Phone: +91 9801917901</p>
         </div>
 
       </div>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import heroImg from "../assets/hero.jpeg";
 import { api } from "../utils/api";
 
-const WHATSAPP_NUMBER = "+91 9801917901"; // Replace with your real number
+const WHATSAPP_NUMBER = "9801917901"; // Replace with your real number
 const WHATSAPP_MSG    = encodeURIComponent("Hi! I want to know more about Bihar Skill Hub courses.");
 
 // Animated counter hook
