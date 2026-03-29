@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { getUser } from "./utils/api";
-
+import { getUser, clearAuth, api } from "../utils/api";
 import Navbar         from "./Components/Navbar";
 import Footer         from "./Components/Footer";
 import Home           from "./pages/Home";
