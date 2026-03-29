@@ -45,30 +45,33 @@ const Courses = () => {
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const [cRes, catRes] = await Promise.all([
-        api.get("/courses/"),
-        api.get("/courses/categories/"),
-        ]);
-        const cData   = await cRes.json();
-        const catData = await catRes.json();
+  try {
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-        // Always ensure arrays
-        const courseList   = Array.isArray(cData)         ? cData         
-                   : Array.isArray(cData.results)  ? cData.results 
-                   : [];
-        const categoryList = Array.isArray(catData)        ? catData        
-                   : Array.isArray(catData.results) ? catData.results 
-                   : [];
+    // Use plain fetch without auth token for public endpoints
+    const [cRes, catRes] = await Promise.all([
+      fetch(`${apiBase}/api/courses/`),
+      fetch(`${apiBase}/api/courses/categories/`),
+    ]);
 
-        setCourses(courseList);
-        setCategories(categoryList);
-      } catch {
-        setError("Could not load courses. Make sure the backend is running.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const cData   = await cRes.json();
+    const catData = await catRes.json();
+
+    const courseList   = Array.isArray(cData)          ? cData
+                       : Array.isArray(cData.results)   ? cData.results
+                       : [];
+    const categoryList = Array.isArray(catData)         ? catData
+                       : Array.isArray(catData.results)  ? catData.results
+                       : [];
+
+    setCourses(courseList);
+    setCategories(categoryList);
+  } catch {
+    setError("Could not load courses. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
     load();
   }, []);
 
