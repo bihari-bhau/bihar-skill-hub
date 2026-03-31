@@ -2985,3 +2985,30 @@ img{
   .nav-links.open { display: flex; }
   .navbar-container { position: relative; flex-wrap: wrap; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PHASE 3 — Course Card Upgrades (Language badge, Eligibility, Batch Date)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Language badge on thumbnail */
+.lang-badge {
+  position: absolute; bottom: 10px; left: 10px;
+  background: rgba(0,0,0,.65); color: #fff;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* Info grid below stats */
+.card-info-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 14px;
+}
+.card-info-item {
+  display: flex; align-items: center; gap: 5px;
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 12px; color: #475569; font-weight: 500;
+}
+.info-icon { font-size: 13px; }
+.batch-date { background: #fffbeb; border-color: #fde68a; color: #92400e; }

@@ -33,6 +33,15 @@ class Course(models.Model):
         (ADVANCED,     'Advanced'),
     ]
 
+    HINDI   = 'hindi'
+    ENGLISH = 'english'
+    HINGLISH = 'hinglish'
+    LANGUAGE_CHOICES = [
+        (HINDI,    'Hindi'),
+        (ENGLISH,  'English'),
+        (HINGLISH, 'Hinglish'),
+    ]
+
     title           = models.CharField(max_length=200)
     slug            = models.SlugField(unique=True)
     description     = models.TextField()
@@ -47,6 +56,21 @@ class Course(models.Model):
     rating          = models.DecimalField(max_digits=3, decimal_places=1, default=4.5)
     students_count  = models.PositiveIntegerField(default=0)
     passing_score   = models.IntegerField(default=70, help_text='Minimum quiz score % to get certificate')
+
+    # ── Phase 3 new fields ────────────────────────────────────────────────────
+    eligibility     = models.CharField(
+        max_length=200, blank=True, default='Any Branch',
+        help_text='e.g. Any Branch, CSE/IT, ECE/EE, Mechanical'
+    )
+    next_batch_date = models.DateField(
+        null=True, blank=True,
+        help_text='Date of next batch starting'
+    )
+    language        = models.CharField(
+        max_length=10, choices=LANGUAGE_CHOICES, default=HINGLISH,
+        help_text='Language course is taught in'
+    )
+
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
 

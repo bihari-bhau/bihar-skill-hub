@@ -13,15 +13,20 @@ class CourseListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = Course
-        fields = ['id', 'title', 'slug', 'description', 'thumbnail', 'category_name',
-                  'is_free', 'price', 'duration_hours', 'level', 'rating',
-                  'students_count', 'status', 'created_at']
+        fields = [
+            'id', 'title', 'slug', 'description', 'thumbnail',
+            'category_name', 'is_free', 'price', 'duration_hours',
+            'level', 'rating', 'students_count', 'status',
+            'eligibility', 'next_batch_date', 'language',
+            'created_at',
+        ]
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(), source='category', write_only=True, required=False
+        queryset=Category.objects.all(), source='category',
+        write_only=True, required=False
     )
 
     class Meta:
