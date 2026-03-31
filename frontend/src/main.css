@@ -1,0 +1,28 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Bihar Skill Hub — Main CSS Entry Point
+   All styles are split into separate files for easy editing.
+   
+   To edit a specific page/component, open the matching file:
+   
+   base.css            → Reset, body, common buttons, section
+   navbar.css          → Top navigation bar
+   home.css            → Home page (hero, stats, features, testimonials)
+   courses.css         → Courses page (grid, cards, filters, tabs)
+   auth.css            → Login & Register pages
+   profile.css         → Profile page with sidebar tabs
+   payment.css         → Payment page & success page
+   quiz.css            → Quiz page
+   success-stories.css → Success stories page
+   misc.css            → Footer, course detail, dashboard
+───────────────────────────────────────────────────────────────────────── */
+
+@import './styles/base.css';
+@import './styles/navbar.css';
+@import './styles/home.css';
+@import './styles/courses.css';
+@import './styles/auth.css';
+@import './styles/profile.css';
+@import './styles/payment.css';
+@import './styles/quiz.css';
+@import './styles/success-stories.css';
+@import './styles/misc.css';

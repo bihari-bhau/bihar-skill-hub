@@ -1,0 +1,100 @@
+/* ─── BASE — Reset, Body, Common Elements ─────────────────────────────────── */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #eef5ff;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+a { text-decoration: none; }
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Common Buttons ──────────────────────────────────────────────────────────*/
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.primary-btn {
+  background: #1e90ff;
+  color: white;
+  padding: 12px 26px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.primary-btn:hover {
+  background: #187bcd;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: #0a3d62;
+  color: white;
+  padding: 12px 26px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.secondary-btn:hover {
+  background: #062b45;
+  transform: translateY(-2px);
+}
+
+/* ── Common Section ──────────────────────────────────────────────────────────*/
+.section {
+  max-width: 1200px;
+  margin: auto;
+  padding: 70px 20px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+.section-header h2 {
+  font-size: 36px;
+  color: #0a3d62;
+  margin-bottom: 10px;
+}
+.section-header p {
+  font-size: 17px;
+  color: #5b6b7a;
+}
+
+/* ── Form Feedback ───────────────────────────────────────────────────────────*/
+.form-error {
+  background: #fff0f0;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+.form-subtitle { color: #666; margin: -8px 0 18px; font-size: 14px; }
+.form-footer    { text-align: center; margin-top: 16px; font-size: 14px; color: #555; }
+.form-footer a  { color: #2563eb; text-decoration: none; font-weight: 600; }
+
+/* ── No Course Found ─────────────────────────────────────────────────────────*/
+.no-course-found {
+  text-align: center;
+  color: #5b6b7a;
+  font-size: 18px;
+  grid-column: 1 / -1;
+  padding: 20px 0;
+}

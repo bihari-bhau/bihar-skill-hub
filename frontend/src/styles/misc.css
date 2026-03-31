@@ -1,0 +1,91 @@
+/* ─── FOOTER ─────────────────────────────────────────────────────────────── */
+
+.site-footer { background: #0a3d62; color: white; margin-top: 60px; }
+.footer-inner { max-width: 1200px; margin: auto; padding: 40px 10%; display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+.footer-col { max-width: 250px; }
+.footer-col h3, .footer-col h4 { margin-bottom: 10px; }
+.footer-col p  { font-size: 14px; line-height: 1.6; }
+.footer-col a  { display: block; color: white; font-size: 14px; margin-bottom: 6px; transition: 0.3s ease; }
+.footer-col a:hover { color: #90c2ff; }
+.footer-bottom { text-align: center; padding: 15px; background: #062b45; font-size: 14px; }
+
+@media (max-width: 768px) {
+  .footer-inner { flex-direction: column; text-align: center; gap: 24px; padding: 32px 5%; }
+  .footer-col   { max-width: 100%; }
+}
+
+/* ─── COURSE DETAIL PAGE ─────────────────────────────────────────────────── */
+
+.course-detail-page { padding: 60px 8%; background: #f4f8ff; min-height: 100vh; }
+.course-detail-card {
+  max-width: 1100px; margin: auto; background: white;
+  border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; overflow: hidden;
+}
+.course-detail-image { background: #eef5ff; display: flex; align-items: center; justify-content: center; padding: 30px; }
+.course-detail-image img, .course-detail-real-image { width: 100%; max-width: 420px; border-radius: 14px; object-fit: cover; }
+.course-detail-content { padding: 35px 30px; }
+
+.detail-badge { display: inline-block; background: #e8f1ff; color: #0a3d62; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+.course-detail-content h1 { font-size: 38px; color: #0a3d62; margin-bottom: 16px; }
+.detail-desc  { font-size: 16px; color: #5b6b7a; line-height: 1.7; margin-bottom: 22px; }
+.detail-info  { display: grid; gap: 10px; margin-bottom: 24px; }
+.detail-info p { font-size: 15px; color: #334155; }
+.detail-enroll-btn { background: #1e90ff; color: white; border: none; padding: 14px 24px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s ease; }
+.detail-enroll-btn:hover { background: #187bcd; }
+
+.enrolled-badge { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 8px 18px; font-weight: 600; display: inline-block; margin: 12px 0; }
+
+.course-section    { max-width: 860px; margin: 32px auto; padding: 0 20px; }
+.course-section h2 { font-size: 1.4rem; margin-bottom: 16px; color: #1e293b; }
+.lecture-list, .notes-list { display: flex; flex-direction: column; gap: 10px; }
+.lecture-item, .note-item  { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; }
+.lecture-info  { display: flex; flex-direction: column; gap: 2px; }
+.lecture-link, .download-btn { background: #2563eb; color: #fff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; border: none; cursor: pointer; }
+.lecture-link:hover, .download-btn:hover { background: #1d4ed8; }
+
+.course-benefits    { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-top: 20px; }
+.course-benefits h4 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+.course-benefits ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.course-benefits li { font-size: 14px; color: #475569; }
+
+@media (max-width: 900px) {
+  .course-detail-card { grid-template-columns: 1fr; }
+  .course-detail-content h1 { font-size: 30px; }
+}
+@media (max-width: 768px) {
+  .course-detail-page    { padding: 35px 5%; }
+  .course-detail-content { padding: 25px 20px; }
+  .course-detail-content h1 { font-size: 26px; }
+}
+
+/* ─── DASHBOARD ──────────────────────────────────────────────────────────── */
+
+.dashboard-page      { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+.dashboard-header    { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; }
+.dashboard-header h1 { font-size: 1.8rem; color: #1e293b; margin: 0; }
+.dashboard-email     { color: #64748b; margin: 4px 0 0; }
+.dashboard-stats     { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 40px; }
+.stat-card           { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.stat-card h3        { font-size: 2rem; color: #2563eb; margin: 0 0 6px; }
+.stat-card p         { color: #64748b; font-size: 13px; margin: 0; }
+.dashboard-section   { margin-bottom: 40px; }
+.dashboard-section h2 { font-size: 1.3rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; color: #1e293b; }
+.empty-state         { text-align: center; padding: 40px; background: #f8fafc; border-radius: 12px; }
+.empty-state p       { color: #64748b; margin-bottom: 16px; }
+.empty-state button, .empty-note { color: #64748b; font-style: italic; }
+.enrollment-list     { display: flex; flex-direction: column; gap: 14px; }
+.enrollment-card     { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.enrollment-info     { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.enrollment-info h3  { margin: 0; font-size: 1rem; color: #1e293b; }
+.enrollment-progress span { font-size: 12px; color: #64748b; }
+.enrollment-actions  { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.enrollment-actions button { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; font-size: 13px; }
+.enrollment-actions button:hover { background: #1d4ed8; }
+.cert-list  { display: flex; flex-direction: column; gap: 12px; }
+.cert-card  { display: flex; align-items: center; gap: 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.cert-icon  { font-size: 2rem; }
+.cert-info  { flex: 1; }
+.cert-info h4     { margin: 0 0 4px; color: #1e293b; }
+.cert-info p      { margin: 0; color: #64748b; font-size: 14px; }
+.cert-info small  { color: #94a3b8; font-size: 12px; }
