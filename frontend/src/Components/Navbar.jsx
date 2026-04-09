@@ -4,8 +4,8 @@ import { getUser, clearAuth, api } from "../utils/api";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [user, setUser]   = useState(null);
-  const [open, setOpen]   = useState(false);
+  const [user, setUser] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setUser(getUser());
@@ -23,20 +23,26 @@ const Navbar = () => {
   return (
     <header className="navbar">
       <div className="navbar-container">
-
-        {/* Logo */}
         <div className="navbar-logo">
           <Link to="/"><h2>Bihar Skill Hub</h2></Link>
         </div>
 
-        {/* Nav Links */}
         <nav className={`nav-links ${open ? "open" : ""}`}>
           <Link to="/"                onClick={() => setOpen(false)}>Home</Link>
           <Link to="/courses"         onClick={() => setOpen(false)}>Courses</Link>
+          <Link to="/internships"     onClick={() => setOpen(false)}>Internships</Link>
+          <Link to="/free-resources"  onClick={() => setOpen(false)}>Free Resources</Link>
           <Link to="/success-stories" onClick={() => setOpen(false)}>Success Stories</Link>
+          <Link to="/about"           onClick={() => setOpen(false)}>About</Link>
+          <Link to="/contact"         onClick={() => setOpen(false)}>Contact</Link>
 
           {user ? (
             <>
+              {user.role === "admin" && (
+                <Link to="/admin" className="admin-nav-link" onClick={() => setOpen(false)}>
+                  ⚙️ Admin
+                </Link>
+              )}
               <Link to="/profile" className="profile-nav-link" onClick={() => setOpen(false)}>
                 <span className="nav-avatar">
                   {user.full_name?.charAt(0).toUpperCase()}
@@ -53,11 +59,9 @@ const Navbar = () => {
           )}
         </nav>
 
-        {/* Hamburger */}
         <button className="hamburger" onClick={() => setOpen(!open)}>
           {open ? "✕" : "☰"}
         </button>
-
       </div>
     </header>
   );
