@@ -19,7 +19,7 @@ class RegisterView(generics.CreateAPIView):
 
         # ── Send welcome email ──────────────────────────────
         try:
-            send_welcome_email(user.email, user.first_name or user.username)
+            send_welcome_email(user.email, user.full_name or user.username)
         except Exception as e:
             print(f"[Email Error] Welcome email failed: {e}")
         # ───────────────────────────────────────────────────
