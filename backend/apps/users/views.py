@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserDetailSerializer, ChangePasswordSerializer
 from .models import User
+from utils.mailer import send_welcome_email  # ← ADD THIS
 
 
 class RegisterView(generics.CreateAPIView):
@@ -15,6 +16,14 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        # ── Send welcome email ──────────────────────────────
+        try:
+            send_welcome_email(user.email, user.first_name or user.username)
+        except Exception as e:
+            print(f"[Email Error] Welcome email failed: {e}")
+        # ───────────────────────────────────────────────────
+
         refresh = RefreshToken.for_user(user)
         return Response({
             'message': 'Registration successful.',

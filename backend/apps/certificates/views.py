@@ -5,6 +5,7 @@ from django.http import FileResponse
 from .models import Certificate
 from .serializers import CertificateSerializer, IssueOfferLetterSerializer
 from .utils import generate_certificate_pdf, generate_offer_letter_pdf
+from utils.mailer import send_certificate_email  # ← ADD THIS
 
 
 class MyCertificatesView(generics.ListAPIView):
@@ -29,7 +30,6 @@ class DownloadCertificateView(APIView):
             return Response({'error': 'Certificate not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         if not cert.pdf_file:
-            # Regenerate if missing
             if cert.cert_type == Certificate.OFFER_LETTER:
                 generate_offer_letter_pdf(cert)
             else:
@@ -38,6 +38,22 @@ class DownloadCertificateView(APIView):
 
         if not cert.pdf_file:
             return Response({'error': 'PDF could not be generated.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # ── Email PDF to student on download ────────────────
+        try:
+            with cert.pdf_file.open('rb') as f:
+                pdf_data = f.read()
+            label = 'Offer Letter' if cert.cert_type == Certificate.OFFER_LETTER else 'Certificate'
+            send_certificate_email(
+                to_email=request.user.email,
+                user_name=request.user.first_name or request.user.username,
+                course_name=cert.course.title if cert.course else label,
+                pdf_buffer=pdf_data,
+                label=label,
+            )
+        except Exception as e:
+            print(f"[Email Error] Download email failed: {e}")
+        # ────────────────────────────────────────────────────
 
         response = FileResponse(cert.pdf_file.open('rb'), content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{cert.pdf_file.name.split("/")[-1]}"'
@@ -78,13 +94,28 @@ class IssueOfferLetterView(APIView):
             defaults={**serializer.validated_data, 'issued': False}
         )
         if not created:
-            # Update fields on existing
             for field, value in serializer.validated_data.items():
                 setattr(cert, field, value)
             cert.save()
 
         generate_offer_letter_pdf(cert)
         cert.refresh_from_db()
+
+        # ── Email offer letter to student automatically ──────
+        try:
+            with cert.pdf_file.open('rb') as f:
+                pdf_data = f.read()
+            send_certificate_email(
+                to_email=cert.student.email,
+                user_name=cert.student.first_name or cert.student.username,
+                course_name=cert.course.title if cert.course else 'Program',
+                pdf_buffer=pdf_data,
+                label='Offer Letter',
+            )
+        except Exception as e:
+            print(f"[Email Error] Offer letter email failed: {e}")
+        # ────────────────────────────────────────────────────
+
         return Response(CertificateSerializer(cert).data, status=status.HTTP_201_CREATED)
 
 
@@ -126,4 +157,21 @@ class RegenerateCertificateView(APIView):
             generate_certificate_pdf(cert)
 
         cert.refresh_from_db()
+
+        # ── Email regenerated PDF to student ─────────────────
+        try:
+            with cert.pdf_file.open('rb') as f:
+                pdf_data = f.read()
+            label = 'Offer Letter' if cert.cert_type == Certificate.OFFER_LETTER else 'Certificate'
+            send_certificate_email(
+                to_email=cert.student.email,
+                user_name=cert.student.first_name or cert.student.username,
+                course_name=cert.course.title if cert.course else label,
+                pdf_buffer=pdf_data,
+                label=label,
+            )
+        except Exception as e:
+            print(f"[Email Error] Regenerate email failed: {e}")
+        # ────────────────────────────────────────────────────
+
         return Response({'message': 'PDF regenerated.', 'pdf_url': cert.pdf_file.url if cert.pdf_file else None})
