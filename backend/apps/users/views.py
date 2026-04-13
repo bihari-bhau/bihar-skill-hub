@@ -6,7 +6,21 @@ from .serializers import RegisterSerializer, LoginSerializer, UserDetailSerializ
 from .models import User
 from utils.mailer import send_welcome_email  # ← ADD THIS
 
+from django.http import HttpResponse
+from django.core.mail import send_mail
 
+def test_email(request):
+    try:
+        send_mail(
+            subject='Test Email - Bihar Skill Hub',
+            message='SMTP is working!',
+            from_email='Bihar Skill Hub <a7d939001@smtp-brevo.com>',
+            recipient_list=['your-personal-email@gmail.com'],  # ← your email
+            fail_silently=False,
+        )
+        return HttpResponse('✅ Email sent successfully!')
+    except Exception as e:
+        return HttpResponse(f'❌ Error: {str(e)}')
 class RegisterView(generics.CreateAPIView):
     """POST /api/auth/register/ — Student self-registration"""
     serializer_class = RegisterSerializer
