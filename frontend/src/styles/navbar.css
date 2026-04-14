@@ -1,24 +1,42 @@
 /* ─── NAVBAR ─────────────────────────────────────────────────────────────── */
 
+:root {
+  --nav-bg: rgba(235, 244, 255, 0.92);
+  --nav-border: rgba(10, 61, 98, 0.08);
+  --nav-text: #0a3d62;
+  --nav-accent: #e8711a;
+  --nav-accent-hover: #c95e10;
+  --nav-link-hover: #1e90ff;
+  --nav-active-dot: #e8711a;
+  --nav-shadow: 0 4px 24px rgba(10, 61, 98, 0.1);
+  --nav-radius: 10px;
+  --transition: 0.25s ease;
+}
+
 .navbar {
   width: 100%;
-  background: #e6f0ff;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nav-border);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: var(--nav-shadow);
 }
 
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 18px 4%;
+  padding: 14px 4%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   position: relative;
 }
+
+/* ─── LOGO (unchanged) ──────────────────────────────────────────────────── */
 
 .navbar-logo h2 {
   font-size: 22px;
@@ -28,81 +46,277 @@
   white-space: nowrap;
 }
 
+/* ─── NAV LINKS ─────────────────────────────────────────────────────────── */
+
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 4px;
   margin-left: auto;
 }
 
 .nav-links a {
-  color: #0a3d62;
-  font-weight: 600;
-  font-size: 16px;
-  transition: 0.3s ease;
+  color: var(--nav-text);
+  font-weight: 500;
+  font-size: 14.5px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  position: relative;
+  transition: color var(--transition), background var(--transition);
+  letter-spacing: 0.01em;
 }
-.nav-links a:hover { color: #1e90ff; }
+
+.nav-links a:hover {
+  color: var(--nav-link-hover);
+  background: rgba(30, 144, 255, 0.08);
+}
+
+/* Active link indicator */
+.nav-links a.active {
+  color: var(--nav-accent);
+  font-weight: 600;
+}
+
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--nav-active-dot);
+  border-radius: 50%;
+}
+
+/* Focus styles for keyboard nav */
+.nav-links a:focus-visible {
+  outline: 2px solid var(--nav-link-hover);
+  outline-offset: 2px;
+}
+
+/* ─── AUTH BUTTONS ──────────────────────────────────────────────────────── */
 
 .login-btn {
-  background: #0a3d62;
-  color: white !important;
-  padding: 10px 18px;
-  border-radius: 8px;
+  background: transparent !important;
+  color: var(--nav-text) !important;
+  border: 1.5px solid var(--nav-text) !important;
+  padding: 7px 18px !important;
+  border-radius: var(--nav-radius) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  transition: all var(--transition) !important;
 }
-.login-btn:hover { background: #062b45; }
+
+.login-btn:hover {
+  background: var(--nav-text) !important;
+  color: white !important;
+}
 
 .register-btn {
-  background: #1e90ff;
+  background: var(--nav-accent) !important;
   color: white !important;
-  padding: 10px 18px;
-  border-radius: 8px;
+  padding: 7px 18px !important;
+  border-radius: var(--nav-radius) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  border: 1.5px solid transparent !important;
+  transition: all var(--transition) !important;
 }
-.register-btn:hover { background: #187bcd; }
 
-/* Profile link in navbar */
+.register-btn:hover {
+  background: var(--nav-accent-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(232, 113, 26, 0.35);
+}
+
+/* ─── PROFILE & USER ────────────────────────────────────────────────────── */
+
 .profile-nav-link {
-  display: flex; align-items: center; gap: 7px;
-  color: #1d4ed8 !important; font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--nav-text) !important;
+  font-weight: 600;
+  font-size: 14px;
   text-decoration: none;
-}
-.nav-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-  color: #fff; font-size: 13px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
+  padding: 6px 10px;
+  border-radius: var(--nav-radius);
+  transition: background var(--transition);
 }
 
-.dashboard-link { color: #2563eb !important; font-weight: 600; }
+.profile-nav-link:hover {
+  background: rgba(10, 61, 98, 0.07);
+}
+
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8711a, #c95e10);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-link {
+  color: #2563eb !important;
+  font-weight: 600;
+}
 
 .user-email {
-  font-size: 14px; font-weight: 600; color: #0a3d62;
-  background: #dbeafe; padding: 8px 12px; border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nav-text);
+  background: rgba(10, 61, 98, 0.07);
+  padding: 7px 12px;
+  border-radius: var(--nav-radius);
 }
+
+/* ─── LOGOUT BUTTON ─────────────────────────────────────────────────────── */
 
 .logout-btn {
-  background: #ef4444; color: white;
-  border: none; padding: 10px 18px;
-  border-radius: 8px; font-size: 15px;
-  font-weight: 600; cursor: pointer; transition: 0.3s ease;
+  background: transparent;
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+  padding: 7px 16px;
+  border-radius: var(--nav-radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  letter-spacing: 0.01em;
 }
-.logout-btn:hover { background: #dc2626; }
 
-/* Hamburger mobile menu */
-.hamburger {
-  display: none; background: none; border: none;
-  font-size: 1.5rem; cursor: pointer; color: #1e293b;
+.logout-btn:hover {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
+
+.logout-btn:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+/* ─── ADMIN LINK ────────────────────────────────────────────────────────── */
+
+.admin-nav-link {
+  color: var(--nav-accent) !important;
+  font-weight: 600;
+  background: rgba(232, 113, 26, 0.08);
+  padding: 6px 12px;
+  border-radius: var(--nav-radius);
+}
+
+.admin-nav-link:hover {
+  background: rgba(232, 113, 26, 0.15) !important;
+  color: var(--nav-accent-hover) !important;
+}
+
+/* ─── HAMBURGER ─────────────────────────────────────────────────────────── */
+
+.hamburger {
+  display: none;
+  background: none;
+  border: 1.5px solid var(--nav-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--nav-text);
+  transition: background var(--transition);
+}
+
+.hamburger:hover {
+  background: rgba(10, 61, 98, 0.07);
+}
+
+/* ─── TABLET (769–1024px) ───────────────────────────────────────────────── */
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .nav-links {
+    gap: 2px;
+  }
+
+  .nav-links a {
+    font-size: 13.5px;
+    padding: 6px 9px;
+  }
+
+  .login-btn,
+  .register-btn {
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ─── MOBILE (≤768px) ───────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  .hamburger { display: block; }
-  .nav-links {
-    display: none; flex-direction: column;
-    position: absolute; top: 64px; left: 0; right: 0;
-    background: #fff; padding: 16px 24px; gap: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 8px 24px rgba(0,0,0,.1);
-    z-index: 999;
+  .hamburger {
+    display: block;
   }
-  .nav-links.open { display: flex; }
-  .navbar-container { padding: 18px 5%; }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 12px 20px 20px;
+    gap: 4px;
+    border-bottom: 1px solid var(--nav-border);
+    box-shadow: 0 12px 32px rgba(10, 61, 98, 0.12);
+    z-index: 999;
+
+    /* Smooth slide animation */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  }
+
+  .nav-links.open {
+    max-height: 600px;
+    opacity: 1;
+    padding: 12px 20px 20px;
+  }
+
+  .nav-links a {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .nav-links a.active::after {
+    display: none;
+  }
+
+  .login-btn,
+  .register-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .logout-btn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .navbar-container {
+    padding: 14px 5%;
+  }
 }
