@@ -20,12 +20,15 @@ import ContactUs       from "./pages/ContactUs";
 import FreeResources   from "./pages/FreeResources";
 import Internships     from "./pages/Internships";
 import AdminDashboard  from "./pages/AdminDashboard";
+import CertificateVerification from "./pages/CertificateVerification";
 
-const PrivateRoute = ({ children }) =>
-  getUser() ? children : <Navigate to="/login" replace />;
+const PrivateRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" replace />;
+};
 
 const AdminRoute = ({ children }) => {
-  const user = getUser();
+  const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== "admin") return <Navigate to="/" replace />;
   return children;
@@ -43,7 +46,7 @@ function Layout() {
     <>
       {!isAuth && !isAdmin && <Navbar />}
       <Routes>
-        <Route path="/"                element={<Home />} />
+        <Route path="/verify-certificate" element={<CertificateVerification />} />
         <Route path="/courses"         element={<Courses />} />
         <Route path="/course/:id"      element={<CourseDetail />} />
         <Route path="/login"           element={<Login />} />

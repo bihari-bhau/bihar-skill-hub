@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const WHATSAPP_NUMBER = "919999999999";
+const WHATSAPP_NUMBER = "+91 9801917901";
 const WHATSAPP_MSG    = encodeURIComponent("Hi! I want to know more about Bihar Skill Hub.");
 
 const FAQS = [
@@ -46,7 +46,7 @@ export default function ContactUs() {
         <div className="contact-cards">
           {[
             { icon: "📧", title: "Email Us",      value: "admin@biharskillhub.co.in", link: "mailto:admin@biharskillhub.co.in" },
-            { icon: "💬", title: "WhatsApp",      value: "+91 99999 99999",            link: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}` },
+            { icon: "💬", title: "WhatsApp",      value: "+91 98019 17901",            link: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}` },
             { icon: "🌐", title: "Website",       value: "biharskillhub.co.in",        link: "https://biharskillhub.co.in" },
             { icon: "📍", title: "Location",      value: "Bihar, India",               link: null },
           ].map((c) => (
