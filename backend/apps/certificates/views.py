@@ -5,8 +5,9 @@ from django.http import FileResponse
 from .models import Certificate
 from .serializers import CertificateSerializer, IssueOfferLetterSerializer
 from .utils import generate_certificate_pdf, generate_offer_letter_pdf
-from utils.mailer import send_certificate_email  # ← ADD THIS
 
+
+# ─── Student Views ────────────────────────────────────────────────────────────
 
 class MyCertificatesView(generics.ListAPIView):
     """GET /api/certificates/my/ — Student views their certificates & offer letters"""
@@ -21,7 +22,7 @@ class MyCertificatesView(generics.ListAPIView):
 
 
 class DownloadCertificateView(APIView):
-    """GET /api/certificates/<pk>/download/ — Download PDF"""
+    """GET /api/certificates/<pk>/download/ — Student downloads their certificate PDF"""
 
     def get(self, request, pk):
         try:
@@ -30,6 +31,7 @@ class DownloadCertificateView(APIView):
             return Response({'error': 'Certificate not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         if not cert.pdf_file:
+            # Regenerate if missing
             if cert.cert_type == Certificate.OFFER_LETTER:
                 generate_offer_letter_pdf(cert)
             else:
@@ -39,26 +41,46 @@ class DownloadCertificateView(APIView):
         if not cert.pdf_file:
             return Response({'error': 'PDF could not be generated.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # ── Email PDF to student on download ────────────────
-        try:
-            with cert.pdf_file.open('rb') as f:
-                pdf_data = f.read()
-            label = 'Offer Letter' if cert.cert_type == Certificate.OFFER_LETTER else 'Certificate'
-            send_certificate_email(
-                to_email=request.user.email,
-                user_name=request.user.first_name or request.user.username,
-                course_name=cert.course.title if cert.course else label,
-                pdf_buffer=pdf_data,
-                label=label,
-            )
-        except Exception as e:
-            print(f"[Email Error] Download email failed: {e}")
-        # ────────────────────────────────────────────────────
-
         response = FileResponse(cert.pdf_file.open('rb'), content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{cert.pdf_file.name.split("/")[-1]}"'
         return response
 
+
+# ─── Public Verification View (No Auth Required) ──────────────────────────────
+
+class VerifyCertificateView(APIView):
+    """
+    PUBLIC — GET /api/certificates/verify/<certificate_id>/
+    Used by the /verify/<id> frontend page and QR code scans.
+    No login required.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, certificate_id):
+        try:
+            cert = Certificate.objects.select_related(
+                'student', 'course'
+            ).get(certificate_id=certificate_id, issued=True)
+        except Certificate.DoesNotExist:
+            return Response(
+                {'error': 'Certificate not found or not yet issued.', 'is_valid': False},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response({
+            'is_valid':       True,
+            'certificate_id': str(cert.certificate_id),
+            'cert_type':      cert.cert_type,
+            'student_name':   cert.student.full_name,
+            'course_title':   cert.course.title,
+            'issued_at':      cert.issued_at,
+            'role':           cert.role   or None,
+            'stipend':        cert.stipend or None,
+            'pdf_file':       cert.pdf_file.url if cert.pdf_file else None,
+        })
+
+
+# ─── Admin Views ──────────────────────────────────────────────────────────────
 
 class AdminCertificateListView(generics.ListAPIView):
     """GET /api/certificates/all/ — Admin lists all certificates"""
@@ -66,7 +88,7 @@ class AdminCertificateListView(generics.ListAPIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get_queryset(self):
-        qs = Certificate.objects.select_related('student', 'course')
+        qs = Certificate.objects.select_related('student', 'course').all()
         cert_type  = self.request.query_params.get('type')
         student_id = self.request.query_params.get('student')
         course_id  = self.request.query_params.get('course')
@@ -94,28 +116,13 @@ class IssueOfferLetterView(APIView):
             defaults={**serializer.validated_data, 'issued': False}
         )
         if not created:
+            # Update fields on existing offer letter
             for field, value in serializer.validated_data.items():
                 setattr(cert, field, value)
             cert.save()
 
         generate_offer_letter_pdf(cert)
         cert.refresh_from_db()
-
-        # ── Email offer letter to student automatically ──────
-        try:
-            with cert.pdf_file.open('rb') as f:
-                pdf_data = f.read()
-            send_certificate_email(
-                to_email=cert.student.email,
-                user_name=cert.student.first_name or cert.student.username,
-                course_name=cert.course.title if cert.course else 'Program',
-                pdf_buffer=pdf_data,
-                label='Offer Letter',
-            )
-        except Exception as e:
-            print(f"[Email Error] Offer letter email failed: {e}")
-        # ────────────────────────────────────────────────────
-
         return Response(CertificateSerializer(cert).data, status=status.HTTP_201_CREATED)
 
 
@@ -157,21 +164,8 @@ class RegenerateCertificateView(APIView):
             generate_certificate_pdf(cert)
 
         cert.refresh_from_db()
-
-        # ── Email regenerated PDF to student ─────────────────
-        try:
-            with cert.pdf_file.open('rb') as f:
-                pdf_data = f.read()
-            label = 'Offer Letter' if cert.cert_type == Certificate.OFFER_LETTER else 'Certificate'
-            send_certificate_email(
-                to_email=cert.student.email,
-                user_name=cert.student.first_name or cert.student.username,
-                course_name=cert.course.title if cert.course else label,
-                pdf_buffer=pdf_data,
-                label=label,
-            )
-        except Exception as e:
-            print(f"[Email Error] Regenerate email failed: {e}")
-        # ────────────────────────────────────────────────────
-
-        return Response({'message': 'PDF regenerated.', 'pdf_url': cert.pdf_file.url if cert.pdf_file else None})
+        return Response({
+            'message':    'PDF regenerated successfully.',
+            'pdf_url':    cert.pdf_file.url if cert.pdf_file else None,
+            'verify_url': cert.get_verify_url(),
+        })
