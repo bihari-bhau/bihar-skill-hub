@@ -57,3 +57,44 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_student(self):
         return self.role == self.STUDENT
+"""
+OTP Model — Email verification for registration
+Add this to backend/apps/users/models.py (append below existing User model)
+"""
+
+import random
+import string
+from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+
+
+class OTPVerification(models.Model):
+    """Stores OTP for email verification during registration."""
+    email      = models.EmailField()
+    otp        = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used    = models.BooleanField(default=False)
+    attempts   = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"OTP for {self.email}"
+
+    def is_valid(self):
+        """OTP valid for 10 minutes, max 3 attempts."""
+        expiry = self.created_at + timedelta(minutes=10)
+        return (
+            not self.is_used and
+            timezone.now() < expiry and
+            self.attempts < 3
+        )
+
+    @classmethod
+    def generate_otp(cls, email):
+        """Delete old OTPs for email and create a new one."""
+        cls.objects.filter(email=email, is_used=False).delete()
+        otp = ''.join(random.choices(string.digits, k=6))
+        return cls.objects.create(email=email, otp=otp)

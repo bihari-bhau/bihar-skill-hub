@@ -172,14 +172,24 @@ SWAGGER_SETTINGS = {
         }
     }
 }
-import os
 
-# Email Configuration - Brevo SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'a7d939001@smtp-brevo.com')
+# ─────────────────────────────────────────────────────────────────────────────
+# EMAIL SETTINGS — Add to backend/settings.py
+# Set these in Railway Variables:
+#   EMAIL_HOST          → smtp.gmail.com
+#   EMAIL_PORT          → 587
+#   EMAIL_HOST_USER     → your Gmail address
+#   EMAIL_HOST_PASSWORD → your Gmail App Password (16 digits)
+#   EMAIL_USE_TLS       → True
+# ─────────────────────────────────────────────────────────────────────────────
+
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = os.environ.get('EMAIL_HOST',          'smtp.gmail.com')
+EMAIL_PORT          = int(os.environ.get('EMAIL_PORT',      587))
+EMAIL_USE_TLS       = os.environ.get('EMAIL_USE_TLS',       'True') == 'True'
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER',     '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = 'Bihar Skill Hub <noreply@biharskillhub.co.in>'
+DEFAULT_FROM_EMAIL  = os.environ.get('EMAIL_HOST_USER',     'admin@biharskillhub.co.in')
+
+# For local development (prints email to terminal instead of sending):
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
