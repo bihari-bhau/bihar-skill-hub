@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, getUser, clearAuth } from "../utils/api";
+import EmailPreferences from "../Components/EmailPreferences";
 
 const TABS = [
   { key: "courses",      label: "My Courses",       icon: "📚" },
@@ -9,6 +10,7 @@ const TABS = [
   { key: "quizzes",      label: "Quiz Results",      icon: "📝" },
   { key: "editprofile",  label: "Edit Profile",      icon: "👤" },
   { key: "password",     label: "Change Password",   icon: "🔒" },
+  { key: "emails", label: "Email Prefs", icon: "📧" }
 ];
 
 const LEVEL_COLORS = {
@@ -372,6 +374,7 @@ export default function Profile() {
     quizzes:      <QuizResultsTab />,
     editprofile:  <EditProfileTab />,
     password:     <ChangePasswordTab />,
+    emails:       <EmailPreferences />
   };
 
   return (
