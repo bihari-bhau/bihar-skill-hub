@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const WHATSAPP_NUMBER = "+91 9801917901";
+const WHATSAPP_NUMBER = "+919801917901";
 const WHATSAPP_MSG    = encodeURIComponent("Hi! I want to know more about Bihar Skill Hub.");
 
 const FAQS = [
