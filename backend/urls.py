@@ -10,7 +10,6 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
-from apps.users.views import test_email  # ← ADD THIS
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,9 +25,6 @@ schema_view = get_schema_view(
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-
-    # Test Email (TEMPORARY - delete after testing)
-    path('test-email/', test_email),  # ← ADD THIS
 
     # API Docs
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
@@ -46,7 +42,8 @@ urlpatterns = [
     path('api/quizzes/',     include('apps.quizzes.urls')),
     path('api/certificates/',include('apps.certificates.urls')),
     path('api/payments/',    include('apps.payments.urls')),
-]
+    path('api/gamification/', include('apps.gamification.urls')),
+]   
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

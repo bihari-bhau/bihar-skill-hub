@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserDetailSerializer, ChangePasswordSerializer
 from .models import User
-from utils.mailer import send_welcome_email  # ← ADD THIS
 
 from django.http import HttpResponse
 from django.core.mail import send_mail
