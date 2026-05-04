@@ -46,7 +46,7 @@ export default function ContactUs() {
         <div className="contact-cards">
           {[
             { icon: "📧", title: "Email Us",      value: "admin@biharskillhub.co.in", link: "mailto:admin@biharskillhub.co.in" },
-            { icon: "💬", title: "WhatsApp",      value: "+91 98019 17901",            link: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}` },
+            { icon: "💬", title: "WhatsApp",      value: "+919801917901",            link: `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}` },
             { icon: "🌐", title: "Website",       value: "biharskillhub.co.in",        link: "https://biharskillhub.co.in" },
             { icon: "📍", title: "Location",      value: "Bihar, India",               link: null },
           ].map((c) => (
