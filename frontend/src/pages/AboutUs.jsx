@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import heroImg from "../assets/hero.jpeg";
 
-const WHATSAPP_NUMBER = "919999999999";
+const WHATSAPP_NUMBER = "919801917901";
 const WHATSAPP_MSG    = encodeURIComponent("Hi! I want to know more about Bihar Skill Hub.");
 
 const TEAM = [
