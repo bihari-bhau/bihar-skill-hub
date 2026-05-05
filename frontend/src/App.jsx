@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "r
 import { getUser } from "./utils/api";
 
 import Navbar             from "./Components/layout/Navbar";
-import Footer             from "./Components/Footer";
+import Footer             from "./Components/layout/Footer";
 import Home               from "./pages/Home";
 import Courses            from "./pages/Courses";
 import CourseDetail       from "./pages/CourseDetail";
