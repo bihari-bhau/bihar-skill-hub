@@ -60,6 +60,7 @@ function Layout() {
         {/* Public Certificate Verify — no login needed */}
         <Route path="/verify"          element={<CertificateVerify />} />
         <Route path="/verify/:certId"  element={<CertificateVerify />} />
+        <Route path="/verify-certificate" element={<CertificateVerify />} />
 
         {/* Protected */}
         <Route path="/dashboard"       element={<PrivateRoute><Dashboard /></PrivateRoute>} />

@@ -35,9 +35,7 @@ const Navbar = () => {
           <Link to="/success-stories" onClick={() => setOpen(false)}>Success Stories</Link>
           <Link to="/about"           onClick={() => setOpen(false)}>About</Link>
           <Link to="/contact"         onClick={() => setOpen(false)}>Contact</Link>
-          <Link to="/verify-certificate" onClick={() => setOpen(false)}>
-            Verify Certificate
-          </Link>
+          <Link to="/verify">Verify Certificate</Link>
           {user ? (
             <>
               {user.role === "admin" && (
