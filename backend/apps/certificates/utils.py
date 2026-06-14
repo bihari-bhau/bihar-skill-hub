@@ -1,7 +1,7 @@
 """
 Certificate & Offer Letter PDF Generator using ReportLab.
 Produces styled, printable PDFs with:
-  - Certificate of Completion (landscape, decorative border, QR code)
+  - Certificate of Completion (landscape, classic navy/gold border, seal, QR code)
   - Offer Letter (portrait, professional letterhead, QR code)
 """
 
@@ -11,6 +11,15 @@ from io import BytesIO
 from datetime import date
 from django.conf import settings
 from django.core.files.base import ContentFile
+
+# ── Brand palette ────────────────────────────────────────────────────────────
+NAVY      = '#1A3C6E'
+GOLD      = '#C9A84C'
+GOLD_DARK = '#8A7530'
+CREAM     = '#FAF6EC'
+GRAY      = '#6B6B6B'
+BODY      = '#444444'
+FOOT      = '#A89B78'
 
 
 def _generate_qr_bytes(url):
@@ -30,111 +39,145 @@ def _generate_qr_bytes(url):
     return buf
 
 
+def _draw_tracked(c, cx, y, text, font, size, color, tracking=0):
+    """Draw letter-spaced text centred on cx."""
+    c.setFont(font, size)
+    c.setFillColor(color)
+    widths = [c.stringWidth(ch, font, size) for ch in text]
+    total  = sum(widths) + tracking * (len(text) - 1)
+    cursor = cx - total / 2
+    for ch, w in zip(text, widths):
+        c.drawString(cursor, y, ch)
+        cursor += w + tracking
+
+
 def generate_certificate_pdf(cert):
-    """Generate a Course Completion Certificate PDF and save to cert.pdf_file."""
+    """Generate a Course Completion Certificate PDF (Classic style)."""
     try:
         from reportlab.lib.pagesizes import A4, landscape
         from reportlab.lib import colors
-        from reportlab.lib.units import cm, mm
         from reportlab.pdfgen import canvas
         from reportlab.lib.utils import ImageReader
     except ImportError:
         return  # ReportLab not installed; skip silently
 
-    buffer  = BytesIO()
+    buffer = BytesIO()
     page_w, page_h = landscape(A4)
     c = canvas.Canvas(buffer, pagesize=landscape(A4))
 
+    navy = colors.HexColor(NAVY)
+    gold = colors.HexColor(GOLD)
+
     # ── Background ────────────────────────────────────────────────────────
-    c.setFillColor(colors.HexColor('#FAFAF7'))
+    c.setFillColor(colors.HexColor(CREAM))
     c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
 
-    # ── Decorative outer border ───────────────────────────────────────────
-    margin = 20
-    c.setStrokeColor(colors.HexColor('#1A3C6E'))
+    # ── Double border ─────────────────────────────────────────────────────
+    m = 24
+    c.setStrokeColor(navy)
     c.setLineWidth(4)
-    c.rect(margin, margin, page_w - 2*margin, page_h - 2*margin, stroke=1, fill=0)
-    c.setStrokeColor(colors.HexColor('#C9A84C'))
+    c.rect(m, m, page_w - 2 * m, page_h - 2 * m, stroke=1, fill=0)
+    c.setStrokeColor(gold)
     c.setLineWidth(1.5)
-    c.rect(margin + 8, margin + 8, page_w - 2*(margin+8), page_h - 2*(margin+8), stroke=1, fill=0)
+    c.rect(m + 10, m + 10, page_w - 2 * (m + 10), page_h - 2 * (m + 10), stroke=1, fill=0)
+
+    # ── Gold corner brackets ──────────────────────────────────────────────
+    ix0, iy0 = m + 10, m + 10
+    ix1, iy1 = page_w - (m + 10), page_h - (m + 10)
+    L = 18
+    c.setStrokeColor(gold)
+    c.setLineWidth(2)
+    for (x, y, dx, dy) in [
+        (ix0, iy0, 1, 1), (ix1, iy0, -1, 1),
+        (ix0, iy1, 1, -1), (ix1, iy1, -1, -1),
+    ]:
+        c.line(x, y, x + dx * L, y)
+        c.line(x, y, x, y + dy * L)
+
+    cx = page_w / 2
 
     # ── Header ────────────────────────────────────────────────────────────
-    c.setFillColor(colors.HexColor('#1A3C6E'))
-    c.setFont('Helvetica-Bold', 36)
-    c.drawCentredString(page_w / 2, page_h - 80, 'CERTIFICATE OF COMPLETION')
+    _draw_tracked(c, cx, page_h - 95, 'CERTIFICATE', 'Helvetica-Bold', 38, navy, tracking=4)
+    _draw_tracked(c, cx, page_h - 122, 'OF COMPLETION', 'Helvetica', 15, colors.HexColor(GOLD_DARK), tracking=8)
+    c.setStrokeColor(gold)
+    c.setLineWidth(1.5)
+    c.line(cx - 60, page_h - 138, cx + 60, page_h - 138)
 
-    c.setFont('Helvetica', 14)
-    c.setFillColor(colors.HexColor('#555555'))
-    c.drawCentredString(page_w / 2, page_h - 105, 'This is to proudly certify that')
+    # ── Intro ─────────────────────────────────────────────────────────────
+    c.setFont('Helvetica-Oblique', 14)
+    c.setFillColor(colors.HexColor(GRAY))
+    c.drawCentredString(cx, page_h - 178, 'This is to proudly certify that')
 
-    # ── Student Name ──────────────────────────────────────────────────────
-    c.setFont('Helvetica-BoldOblique', 42)
-    c.setFillColor(colors.HexColor('#C9A84C'))
-    c.drawCentredString(page_w / 2, page_h - 165, cert.student.full_name)
-
-    # Underline
-    name_width = c.stringWidth(cert.student.full_name, 'Helvetica-BoldOblique', 42)
-    line_x = (page_w - name_width) / 2
-    c.setStrokeColor(colors.HexColor('#C9A84C'))
+    # ── Student name ──────────────────────────────────────────────────────
+    name = cert.student.full_name or 'Student'
+    c.setFont('Helvetica-BoldOblique', 44)
+    c.setFillColor(gold)
+    c.drawCentredString(cx, page_h - 235, name)
+    name_w = c.stringWidth(name, 'Helvetica-BoldOblique', 44)
+    c.setStrokeColor(gold)
     c.setLineWidth(1)
-    c.line(line_x, page_h - 170, line_x + name_width, page_h - 170)
+    c.line(cx - name_w / 2 - 10, page_h - 245, cx + name_w / 2 + 10, page_h - 245)
 
-    # ── Body text ─────────────────────────────────────────────────────────
-    c.setFont('Helvetica', 14)
-    c.setFillColor(colors.HexColor('#333333'))
-    c.drawCentredString(page_w / 2, page_h - 205, 'has successfully completed the course')
+    # ── Course ────────────────────────────────────────────────────────────
+    c.setFont('Helvetica', 15)
+    c.setFillColor(colors.HexColor(BODY))
+    c.drawCentredString(cx, page_h - 278, 'has successfully completed the course')
 
-    c.setFont('Helvetica-Bold', 20)
-    c.setFillColor(colors.HexColor('#1A3C6E'))
-    c.drawCentredString(page_w / 2, page_h - 240, cert.course.title)
+    c.setFont('Helvetica-Bold', 22)
+    c.setFillColor(navy)
+    c.drawCentredString(cx, page_h - 312, cert.course.title)
 
+    issued_date = (cert.issued_at or date.today())
+    issued_str = issued_date.strftime('%B %d, %Y')
     c.setFont('Helvetica', 13)
-    c.setFillColor(colors.HexColor('#555555'))
-    issued_date = cert.issued_at.strftime('%B %d, %Y') if cert.issued_at else date.today().strftime('%B %d, %Y')
-    c.drawCentredString(page_w / 2, page_h - 270, f'with distinction on  {issued_date}')
+    c.setFillColor(colors.HexColor(GRAY))
+    c.drawCentredString(cx, page_h - 340, f'with distinction on {issued_str}')
 
-    # ── Divider ───────────────────────────────────────────────────────────
-    c.setStrokeColor(colors.HexColor('#CCCCCC'))
-    c.setLineWidth(0.5)
-    c.line(100, page_h - 295, page_w - 100, page_h - 295)
+    # ── Seal ──────────────────────────────────────────────────────────────
+    seal_cy = 190
+    c.setStrokeColor(gold)
+    c.setLineWidth(2)
+    c.circle(cx, seal_cy, 30, stroke=1, fill=0)
+    c.setLineWidth(0.75)
+    c.circle(cx, seal_cy, 23, stroke=1, fill=0)
+    c.setFont('Helvetica-Bold', 14)
+    c.setFillColor(navy)
+    c.drawCentredString(cx, seal_cy - 5, 'BSH')
 
-    # ── Signature block ───────────────────────────────────────────────────
-    sig_y = page_h - 340
-    c.setFont('Helvetica-Bold', 13)
-    c.setFillColor(colors.HexColor('#1A3C6E'))
-    c.drawCentredString(page_w / 4, sig_y, 'Bihar Skill Hub')
-    c.setStrokeColor(colors.HexColor('#1A3C6E'))
+    # ── Signature lines ───────────────────────────────────────────────────
+    sig_y = 130
+    lx, rx = 250, page_w - 250
+    c.setStrokeColor(navy)
     c.setLineWidth(1)
-    c.line(page_w/4 - 80, sig_y + 20, page_w/4 + 80, sig_y + 20)
+    c.line(lx - 80, sig_y, lx + 80, sig_y)
+    c.line(rx - 80, sig_y, rx + 80, sig_y)
+    c.setFont('Helvetica-Bold', 12)
+    c.setFillColor(navy)
+    c.drawCentredString(lx, sig_y - 16, 'Bihar Skill Hub')
+    c.drawCentredString(rx, sig_y - 16, issued_str)
     c.setFont('Helvetica', 10)
     c.setFillColor(colors.HexColor('#777777'))
-    c.drawCentredString(page_w / 4, sig_y - 12, 'Director of Education')
+    c.drawCentredString(lx, sig_y - 30, 'Director of Education')
+    c.drawCentredString(rx, sig_y - 30, 'Date of Issue')
 
-    c.setFont('Helvetica-Bold', 13)
-    c.setFillColor(colors.HexColor('#1A3C6E'))
-    c.drawCentredString(3 * page_w / 4, sig_y, issued_date)
-    c.line(3*page_w/4 - 80, sig_y + 20, 3*page_w/4 + 80, sig_y + 20)
-    c.setFont('Helvetica', 10)
-    c.setFillColor(colors.HexColor('#777777'))
-    c.drawCentredString(3 * page_w / 4, sig_y - 12, 'Date of Issue')
-
-    # ── QR Code (bottom right) ────────────────────────────────────────────
+    # ── QR code ───────────────────────────────────────────────────────────
     try:
-        verify_url = cert.get_verify_url()
-        qr_buf     = _generate_qr_bytes(verify_url)
-        qr_img     = ImageReader(qr_buf)
-        qr_size    = 60
-        c.drawImage(qr_img, page_w - margin - qr_size - 10, margin + 10, qr_size, qr_size)
+        qr_buf  = _generate_qr_bytes(cert.get_verify_url())
+        qr_img  = ImageReader(qr_buf)
+        qr_size = 58
+        qx = page_w - (m + 10) - qr_size - 12
+        qy = m + 24
+        c.drawImage(qr_img, qx, qy, qr_size, qr_size)
         c.setFont('Helvetica', 7)
         c.setFillColor(colors.HexColor('#999999'))
-        c.drawCentredString(page_w - margin - (qr_size / 2) - 10, margin + 5, 'Scan to Verify')
+        c.drawCentredString(qx + qr_size / 2, qy - 9, 'Scan to verify')
     except Exception:
-        pass  # Skip QR if qrcode not installed
+        pass
 
-    # ── Certificate ID & Platform ─────────────────────────────────────────
-    c.setFont('Helvetica', 8)
-    c.setFillColor(colors.HexColor('#AAAAAA'))
-    c.drawCentredString(page_w / 2, 35, f'Certificate ID: {cert.certificate_id}  |  biharskillhub.co.in')
+    # ── Footer ────────────────────────────────────────────────────────────
+    c.setFont('Helvetica', 8.5)
+    c.setFillColor(colors.HexColor(FOOT))
+    c.drawCentredString(cx, m + 18, f'Certificate ID: {cert.certificate_id}  ·  biharskillhub.co.in')
 
     c.save()
     buffer.seek(0)
