@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="156 0 708 340" width="708" height="340" role="img" aria-label="Bihar Skill Hub">
+  <title>Bihar Skill Hub</title>
+  <defs>
+    <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E40AF"/>
+      <stop offset="1" stop-color="#1E3A8A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Cap + path mark -->
+  <g transform="translate(340 120)">
+    <!-- band -->
+    <rect x="-58" y="2" width="116" height="26" rx="5" fill="#1E3A8A"/>
+    <!-- band shadow line -->
+    <line x1="-54" y1="28" x2="54" y2="28" stroke="#0F2658" stroke-width="2" opacity="0.4"/>
+    <!-- mortarboard top -->
+    <polygon points="-108,-18 0,-58 108,-18 0,22"
+             fill="url(#capGrad)" stroke="#0F2658" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- top highlight -->
+    <polygon points="-108,-18 0,-58 0,-50 -100,-16" fill="#FFFFFF" opacity="0.08"/>
+    <!-- button -->
+    <circle cx="0" cy="-18" r="5" fill="#FBBF24" stroke="#92400E" stroke-width="0.8"/>
+
+    <!-- Tassel becoming forward path -->
+    <path d="M 0 -18 Q 22 -6 36 12 Q 46 28 70 32 Q 102 36 128 22"
+          fill="none" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+    <!-- arrow head -->
+    <path d="M 128 22 l -16 -6 l 6 16 z" fill="#F59E0B"/>
+    <!-- path dots -->
+    <circle cx="42" cy="16" r="3" fill="#FBBF24"/>
+    <circle cx="72" cy="32" r="3" fill="#FBBF24"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="340" y="225" text-anchor="middle"
+        textLength="320" lengthAdjust="spacingAndGlyphs"
+        font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="34" letter-spacing="2">
+    <tspan fill="#1E3A8A">BIHAR </tspan><tspan fill="#F59E0B">SKILL </tspan><tspan fill="#1E3A8A">HUB</tspan>
+  </text>
+
+  <!-- Divider -->
+  <line x1="170" y1="252" x2="510" y2="252" stroke="#1E3A8A" stroke-width="1.5"/>
+
+  <!-- Tagline -->
+  <text x="340" y="278" text-anchor="middle"
+        textLength="220" lengthAdjust="spacingAndGlyphs"
+        font-family="Helvetica, Arial, sans-serif" font-size="12" letter-spacing="4" fill="#94A3B8">LEARN · GROW · ACHIEVE</text>
+</svg>
