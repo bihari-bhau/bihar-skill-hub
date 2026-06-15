@@ -24,7 +24,9 @@ const Navbar = () => {
     <header className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">
-          <Link to="/"><h2>Bihar Skill Hub</h2></Link>
+          <Link to="/">
+            <img src="/bsh-logo.svg" alt="Bihar Skill Hub" style={{ height: "44px", width: "auto", display: "block" }} />
+          </Link>
         </div>
 
         <nav className={`nav-links ${open ? "open" : ""}`}>
