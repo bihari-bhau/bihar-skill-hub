@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getUser } from "./utils/api";
 
 import Navbar             from "./Components/layout/Navbar";
@@ -21,6 +21,8 @@ import FreeResources      from "./pages/FreeResources";
 import Internships        from "./pages/Internships";
 import AdminDashboard     from "./pages/AdminDashboard";
 import CertificateVerify  from "./pages/CertificateVerify";
+import NotFound           from "./pages/NotFound";
+import ConnectionError    from "./pages/ConnectionError";
 
 const PrivateRoute = ({ children }) =>
   getUser() ? children : <Navigate to="/login" replace />;
@@ -33,16 +35,35 @@ const AdminRoute = ({ children }) => {
 };
 
 const AUTH_ROUTES = ["/login", "/register"];
+const ERROR_ROUTES = ["/connection-error"];
 
 function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAuth   = AUTH_ROUTES.includes(location.pathname);
   const isAdmin  = location.pathname.startsWith("/admin");
   const isVerify = location.pathname.startsWith("/verify");
+  const isError  = ERROR_ROUTES.includes(location.pathname) || location.pathname === "/404";
+  const hideChrome = isAuth || isAdmin || isVerify || isError;
+
+  // Global: when any API call fails to reach the backend, surface the
+  // connection-error page. We pass the current path so it can return there.
+  useEffect(() => {
+    const onNetError = () => {
+      if (location.pathname !== "/connection-error") {
+        navigate("/connection-error", {
+          replace: true,
+          state: { from: location.pathname + location.search },
+        });
+      }
+    };
+    window.addEventListener("api:network-error", onNetError);
+    return () => window.removeEventListener("api:network-error", onNetError);
+  }, [location, navigate]);
 
   return (
     <>
-      {!isAuth && !isAdmin && !isVerify && <Navbar />}
+      {!hideChrome && <Navbar />}
       <Routes>
         <Route path="/"                element={<Home />} />
         <Route path="/courses"         element={<Courses />} />
@@ -69,8 +90,12 @@ function Layout() {
 
         {/* Admin */}
         <Route path="/admin"           element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
+        {/* Error pages */}
+        <Route path="/connection-error" element={<ConnectionError />} />
+        <Route path="*"                 element={<NotFound />} />
       </Routes>
-      {!isAuth && !isAdmin && !isVerify && <Footer />}
+      {!hideChrome && <Footer />}
     </>
   );
 }
